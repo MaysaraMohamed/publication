@@ -16,6 +16,9 @@ import com.scopegroup.dao.Author;
  * @since 2021-06-11
  */
 
+//  PagingAndSortingRepository extends the CrudRepository and adds findAll
+// 	methods that enable you to sort the result and to retrieve it in a paginated way
+
 @RepositoryRestResource(collectionResourceRel = "author", path = "author")
 public interface AuthorRepository extends PagingAndSortingRepository<Author, Integer> {
 	public Optional<Author> findByEmail(String email); 

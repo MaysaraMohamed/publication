@@ -23,7 +23,7 @@ public class PublicationController {
 
 	
 	@GetMapping("/publication/isbn/{ISBN}")
-	public Publication getPublicationByISBN(@PathVariable String ISBN) {
+	public List<Publication> getPublicationByISBN(@PathVariable String ISBN) {
 		return publicationService.getPublicationByISBN(ISBN);
 	}
 

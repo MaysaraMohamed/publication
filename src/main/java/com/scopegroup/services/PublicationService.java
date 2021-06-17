@@ -1,5 +1,6 @@
 package com.scopegroup.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,14 @@ public class PublicationService {
 	@Autowired
 	private PublicationRepository publicationRepository;
 
-	public Publication getPublicationByISBN(@PathVariable String ISBN) {
-		return publicationRepository.findByISBN(ISBN).get();
+	public List<Publication> getPublicationByISBN(@PathVariable String ISBN) {
+		List<Publication> publications = new ArrayList<Publication>();
+		if(publicationRepository.findByISBN(ISBN).isPresent()){
+			publications.add(publicationRepository.findByISBN(ISBN).get());
+			return publications; 
+		}else {
+			return publications; 
+		}
 	}
 
 	public List<Publication> getPublicationByAuthorMail(@PathVariable String mail) {

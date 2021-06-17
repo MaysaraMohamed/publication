@@ -56,13 +56,16 @@ public class FileManageController {
 		  directory.mkdir();
 		}
 		
+		// Save file to on server. 
 		Response response = new Response();
 		byte[] bytes = file.getBytes();
 		String fileName = file.getOriginalFilename();
 		Path path = Paths.get(DIR_TO_UPLOAD + fileName);
 		Files.write(path, bytes);
 
+		// check if file extension is supported or no. 
 		if (Utilities.extensionSupported(fileName, EXT)) {
+			// if file extension supported then call processFile method to process file and insert into db. 
 			HashMap<String, Integer> processedMap = fileManagerService.processFile(DIR_TO_UPLOAD + fileName);
 			if (processedMap != null) {
 				response.setResult(processedMap);

@@ -1,16 +1,17 @@
 package com.scopegroup.services;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.scopegroup.controller.FileManageController;
 import com.scopegroup.dao.Author;
 import com.scopegroup.dao.Book;
 import com.scopegroup.dao.Magazine;
@@ -28,8 +29,7 @@ public class FileManagerService {
 	@Autowired
 	private AuthorRepository authorRepository;
 
-	// private static final Logger LOGGER =
-	// Logger.getLogger(FileManageController.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(FileManageController.class.getName());
 
 	/**
 	 * processFile to load file data into DB.
@@ -53,24 +53,30 @@ public class FileManagerService {
 
 				String[] columns = Utilities.splitLinebyComma(line);
 
-				if (Utilities.missingMandatoryFields(columns)) {
+				if (Utilities.missingMandatoryPublicationFields(columns)) {
 					failedMFieldsCount++;
 					continue;
 				}
 				Set<Publication> publications = new HashSet<Publication>();
 
 				// Skip header .
-				if (!columns[0].contains("email") && !columns[0].contains("firstName")) {
+				if (!line.contains("email") && !line.contains("firstName")) {
 					Author author = new Author(columns[0], columns[1], columns[2]);
 					Author dbAuthor = new Author();
-					System.out.println("Author is :" + author.toString());
+					LOGGER.info("Author is :" + author.toString());
+					boolean autherIsPresent = authorRepository.findByEmail(author.getEmail()).isPresent();
 
 					// check if author not exist then create
-					if (!authorRepository.findByEmail(author.getEmail()).isPresent()) {
-						if (columns[0].length() > 0) {
+					if (!autherIsPresent) {
+						if (Utilities.authorIsPresentInSheet(author)) {
 							dbAuthor = authorRepository.save(author);
-							System.out.println("DB Author is :" + dbAuthor.toString());
+							LOGGER.info("DB Author is :" + dbAuthor.toString());
 							authorsCount++;
+						} else {
+							// Skip publication without author.
+							publicationWithNoAuthorCount++;
+							failedMFieldsCount++;
+							continue;
 						}
 					} else {
 						dbAuthor = authorRepository.findByEmail(author.getEmail()).get();
@@ -78,15 +84,9 @@ public class FileManagerService {
 
 					if (!publicationRepository.findByISBN(columns[4]).isPresent()) {
 
-						// Skip publication without author.
-						if (columns[0].length() < 1) {
-							publicationWithNoAuthorCount++;
-							continue;
-						}
-
 						if (columns[3].equalsIgnoreCase("B")) {
 							Publication book = new Book(columns[4], columns[5], columns[6]);
-							System.out.println("Publication is :" + book.toString());
+							LOGGER.info("Publication is :" + book.toString());
 							publicationRepository.save(book);
 
 							// add publication to the author
@@ -95,14 +95,14 @@ public class FileManagerService {
 							dbAuthor.setPublications(publications);
 
 							// update author if exist
-							if (authorRepository.findByEmail(author.getEmail()).isPresent()) {
+							if (autherIsPresent) {
 								authorRepository.save(dbAuthor);
 							}
 							booksCount++;
 						} else if (columns[3].equalsIgnoreCase("M")) {
 							Publication magazine = new Magazine(columns[4], columns[5],
 									Utilities.stringToDate(columns[7]));
-							System.out.println("Publication is :" + magazine.toString());
+							LOGGER.info("Publication is :" + magazine.toString());
 							publicationRepository.save(magazine);
 
 							// add publication to the author
@@ -111,7 +111,7 @@ public class FileManagerService {
 							dbAuthor.setPublications(publications);
 
 							// update author if exist
-							if (authorRepository.findByEmail(author.getEmail()).isPresent()) {
+							if (autherIsPresent) {
 								authorRepository.save(dbAuthor);
 							}
 							magazinsCount++;
@@ -125,14 +125,14 @@ public class FileManagerService {
 						publications.add(dbPublication);
 
 						dbAuthor.setPublications(publications);
-						if (authorRepository.findByEmail(author.getEmail()).isPresent()) {
+						if (autherIsPresent) {
 							authorRepository.save(dbAuthor);
 						}
 					}
 				}
 			}
 
-		} catch (IOException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			return null;
 		}

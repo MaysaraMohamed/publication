@@ -6,6 +6,8 @@ import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
+import com.scopegroup.dao.Author;
+
 /**
  * @author maysara.mohammed
  * @version 1.0
@@ -42,18 +44,21 @@ public class Utilities {
     	// replace 2 double quotas by one double quote. 
     	line = line.replaceAll("\"\"", "\"");
     	
-        // convert line into columns
-    	//,           // Split on comma
-    	//(?=         // Followed by
-    	//  (?:      // Start a non-capture group
-    	//     [^"]*  // 0 or more non-quote characters
-    	//     "      // 1 quote
-    	//     [^"]*  // 0 or more non-quote characters
-    	//     "      // 1 quote
-    	//   )*       // 0 or more repetition of non-capture group (multiple of 2 quotes will be even)
-    	//   [^"]*    // Finally 0 or more non-quotes
-    	//   $        // Till the end  (This is necessary, else every comma will satisfy the condition)
-    	//)
+    	/*
+         convert line into columns
+    	,           // Split on comma
+    	(?=         // Followed by
+    	  (?:       // Start a non-capture group
+    	     [^"]*  // 0 or more non-quote characters
+    	     "      // 1 quote
+    	     [^"]*  // 0 or more non-quote characters
+    	     "      // 1 quote
+    	   )*       // 0 or more repetition of non-capture group (multiple of 2 quotes will be even)
+    	   [^"]*    // Finally 0 or more non-quotes
+    	   $        // Till the end  (This is necessary, else every comma will satisfy the condition)
+    	)
+    	*/
+    	
         String[] columns = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
         return columns; 
 	}
@@ -78,26 +83,25 @@ public class Utilities {
 	/**
 	 * 
 	 * @param columns
-	 * @return boolean to define if input columns miss mandatory fields or no. 
+	 * @return boolean to define if input Publication miss mandatory fields or no. 
 	 */
-	public static boolean missingMandatoryFields(String[] columns) {
-		int max=2;
-		int count=0; 
-		for (String string : columns) {
-			System.out.println("String is :"+string);
-			if(string.length()<=0) {
-				count++; 
-			}
-			if(columns.length<=7 && count > 0) {
-				count++; 
-			}
-		}
-		if(count>=max || columns.length < 7) {
-			System.out.println("String is : true ");
+	public static boolean missingMandatoryPublicationFields(String[] columns) throws Exception{
+		if(columns[3].length()<=0 || columns[4].length()<=0 || columns[5].length()<=0 || columns.length < 7) {
 			return true; 
 		}else {
-			System.out.println("String is : false ");
-			return false;
+			return false; 
+		}
+	}
+
+	/**
+	 * Check if author is present in sheet or no. 
+	 * @param author
+	 */
+	public static boolean authorIsPresentInSheet(Author author) {
+		if(author.getEmail().length()<=0 || author.getFirstName().length()<=0 || author.getLastName().length()<=0) {
+			return false; 
+		}else {
+			return true;
 		}
 	}
 }
