@@ -86,6 +86,7 @@ public class Utilities {
 	 * @return boolean to define if input Publication miss mandatory fields or no. 
 	 */
 	public static boolean missingMandatoryPublicationFields(String[] columns) throws Exception{
+		if(columns.length < 6) {return false;}
 		if(columns[3].length()<=0 || columns[4].length()<=0 || columns[5].length()<=0 || columns.length < 7) {
 			return true; 
 		}else {
