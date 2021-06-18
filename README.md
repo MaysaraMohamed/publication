@@ -1,8 +1,10 @@
-Upload and process input file API 
-POST request to : localhost:8080/upload
-with multipart file in body request. 
+## How to use publication APP. 
+### Upload and process input file API 
+### POST request to : localhost:8080/upload
+    use multipart file in body request. 
 
-reponse as shown below. 
+### reponse as shown below. 
+```
 {
     "message": "Input file processed successfully",
     "result": {
@@ -15,15 +17,15 @@ reponse as shown below.
     "status": 200,
     "timeStamp": "2021-06-15 00:57:07"
 }
+```
 
 
+### GET APIS. 
+### Get all publications. 
+    get requst to : http://localhost:8080/publication
 
-GET APIS. 
-Get all publications. 
-get requst to : http://localhost:8080/publication
-
-sample from Response as shown below. 
-
+### sample from Response as shown below. 
+```
 [
     {
         "title": "Sketching the Future",
@@ -92,13 +94,14 @@ sample from Response as shown below.
         "isbn": "478-1-56619-909-4"
     }
 ]
+```
 
+### Get publication by ISBN. 
+    Get request to : http://localhost:8080/publication/isbn/{ISBN} 
+    sample request : http://localhost:8080/publication/isbn/478-1-56619-909-4
 
-Get publication by ISBN. 
-Get request to : http://localhost:8080/publication/isbn/{ISBN} 
-sample request : http://localhost:8080/publication/isbn/478-1-56619-909-4
-
-sample response as shown below. 
+### sample response as shown below. 
+```
 {
     "title": "100+1 Healthy Recipes",
     "pType": "B",
@@ -120,13 +123,14 @@ sample response as shown below.
     "description": "\"recipes for mains, sides, appetizers and snacks\"",
     "isbn": "478-1-56619-909-4"
 }
+```
 
 
-
-Get publication by Author's mail. 
-Get request to : http://localhost:8080/publication/mail/{mail}
-sample request : http://localhost:8080/publication/mail/bereshad@scope.com
-sample response as shown below. 
+### Get publication by Author's mail. 
+    Get request to : http://localhost:8080/publication/mail/{mail}
+    sample request : http://localhost:8080/publication/mail/bereshad@scope.com
+### sample response as shown below. 
+```
 [
     {
         "title": "Sketching the Future",
@@ -195,3 +199,4 @@ sample response as shown below.
         "isbn": "478-1-56619-909-4"
     }
 ]
+```
